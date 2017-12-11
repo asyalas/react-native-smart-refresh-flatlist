@@ -18,15 +18,15 @@ import {
   Platform,
   NetInfo,
   Alert,
-  ART,
+  // ART,
   TouchableHighlight
 } from 'react-native'
 import SmartFlatList from './src/index'
 
-const { Surface, Shape, Path, LinearGradient } = ART;
+// const { Surface, Shape, Path, LinearGradient } = ART;
 
-let AnimatedShape = Animated.createAnimatedComponent(Shape);
-let AnimatedSurface = Animated.createAnimatedComponent(Surface);
+// let AnimatedShape = Animated.createAnimatedComponent(Shape);
+// let AnimatedSurface = Animated.createAnimatedComponent(Surface);
 const { width, height } = Dimensions.get('window')
 export default class RefreshAndLoadMorePage extends React.Component {
 

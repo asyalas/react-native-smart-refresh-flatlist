@@ -18,6 +18,7 @@
 
 |Key | Description | Type | Default|
 | --- | ----------- | ---- | ------ |
+|AsycConnectedChange  |   检测网络的事件（低版本change 高版本 connectionChange ）  |string  | 'change'
 |topBackgroundColor         |   下拉显示器的背景色  |string  | '#eca02a'
 |renderItem   |  flatlist的属性        |function   |  |
 |initialPage          |  默认的起始页码      |number  |0                           |
@@ -46,6 +47,11 @@
 
 
 #### Step 2 - import and use in project
+#####on Android
+###### in AndroidManifest.xml
+```javascript
+   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+```
 
 ```javascript
     import SmartFlatList from 'react-native-smart-refresh-flatlist'
@@ -80,5 +86,6 @@ https://github.com/gzfgeh/RefreshListDemo
 https://github.com/greatbsky/react-native-pull
 https://github.com/FaridSafi/react-native-gifted-listview
 #### Finally
+如果对rn源码里的art有兴趣也可以打开源码的注释看看，不过ios需要配置
 如果喜欢，请顺手我一个star，非常感谢~ ：）
 

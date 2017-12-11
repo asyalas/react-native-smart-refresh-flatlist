@@ -18,13 +18,13 @@ import {
     Platform,
     NetInfo,
     Alert,
-    ART
+    // ART
 } from 'react-native';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-const { Surface, Shape, Path, LinearGradient } = ART;
+// const { Surface, Shape, Path, LinearGradient } = ART;
 
-let AnimatedShape = Animated.createAnimatedComponent(Shape);
-let AnimatedSurface = Animated.createAnimatedComponent(Surface);
+// let AnimatedShape = Animated.createAnimatedComponent(Shape);
+// let AnimatedSurface = Animated.createAnimatedComponent(Surface);
 const { width, height } = Dimensions.get('window')
 const pullOkMargin = 100; //下拉到ok状态时topindicator距离顶部的距离
 const defaultDuration = 300;
@@ -41,7 +41,7 @@ export default class SmartFlatList extends Component {
         super(props);
         this.page = 0;
         this.num = 0
-
+        this.AsycConnectedChange = this.props.AsycConnectedChange || 'change'
         this.pullable = this.props.refreshControl == null;
         this.topIndicatorHeight = this.props.topIndicatorHeight || defaultTopIndicatorHeight;
         this.defaultXY = { x: 0, y: this.topIndicatorHeight * -1 };
@@ -160,14 +160,14 @@ export default class SmartFlatList extends Component {
         if (this.flag.pullok && !this.state.isRefreshing) {
             this.state.arcHeight.stopAnimation();
             this.state.pullPan.stopAnimation();
+            this._refreshHandle(() => this._refreshing())
+            // this.arcHeight = Animated.timing(this.state.arcHeight, {
+            //     toValue: 0,
+            //     easing: Easing.linear,
+            //     duration: this.duration + 500
 
-            this.arcHeight = Animated.timing(this.state.arcHeight, {
-                toValue: 0,
-                easing: Easing.linear,
-                duration: this.duration + 500
-
-            }).start(//动画完成后执行下一步
-                () => { this._refreshHandle(() => this._refreshing()) })
+            // }).start(//动画完成后执行下一步
+            //     () => { this._refreshHandle(() => this._refreshing()) })
         }
     }
     onScroll(e) {
@@ -231,18 +231,19 @@ export default class SmartFlatList extends Component {
         return Platform.OS === 'android'
     }
     AsycConnected() {
+        let AsycConnectedChange =   this.AsycConnectedChange
         if (this.isAndroid()) {
             return NetInfo.isConnected.fetch();
         } else {
             return new Promise(function (resolve, reject) {
                 let connect = function handleFirstConnectivityChange(isConnected) {
                     NetInfo.isConnected.removeEventListener(
-                        'change',
+                        AsycConnectedChange,
                         connect
                     );
                     resolve(isConnected)
                 }
-                NetInfo.isConnected.addEventListener('change', connect);
+                NetInfo.isConnected.addEventListener( AsycConnectedChange, connect);
             });
         }
     };
@@ -292,7 +293,6 @@ export default class SmartFlatList extends Component {
 
     _postFetch() {
         this.AsycConnected().then((result) => {
-
             result ? this.onFetch(this.page, this.pageSize, this._callback.bind(this))
                 : Alert.alert('提示', '网络已断开', [
                     { text: '点击重试', onPress: () => this._postFetch() },
@@ -301,23 +301,30 @@ export default class SmartFlatList extends Component {
     }
     _refreshing() {
         this.setFlag(flagPullrelease); //完成下拉，已松开 
-        this.setState({ showLoading: false, isRefreshing: true });
-        this.setDefaultPage()
-        this._postFetch();
+        this.setState({ showLoading: false, isRefreshing: true },()=>{
+            this.setDefaultPage()
+            this._postFetch();
+        });
+       
     }
     _rePostFetch() {
+        
         this.setState({
             hasNoData: false,
             error:false
+        },()=>{
+            this._postFetch();
         });
-        this._postFetch();
+        
     }
     _getMore() {
         let { isMore, isFirst } = this.state;
         if (isMore && !isFirst) {
             this.page++;
-            this.setState({ isRefreshing: false, showLoading: true });
-            this._postFetch()
+            this.setState({ isRefreshing: false, showLoading: true },()=>{
+                this._postFetch()
+            });
+            
         }
 
     }
@@ -382,18 +389,18 @@ export default class SmartFlatList extends Component {
 
     render() {
 
-        let value = this.state.arcHeight._value
-        let path = ART.Path()
-        path.moveTo(0, 0).onBezierCurve(width, 0, width / 2, value, width / 2, value, width, 0);
+        // let value = this.state.arcHeight._value
+        // let path = ART.Path()
+        // path.moveTo(0, 0).onBezierCurve(width, 0, width / 2, value, width / 2, value, width, 0);
 
         return (
             <View style={[styles.wrap, this.props.style]} onLayout={(e) => this.onLayout(e)} >
                 <Animated.View ref={(c) => { this.ani = c; }} style={[this.state.pullPan.getLayout()]}>
                     {this.renderTopIndicator()}
 
-                    <AnimatedSurface ref={(c) => { this.aniView = c; }} width={width} height={value}>
+                    {/* <AnimatedSurface ref={(c) => { this.aniView = c; }} width={width} height={value}>
                         <AnimatedShape d={path} stroke="#fff" strokeWidth={1} fill={this.topBackgroundColor} />
-                    </AnimatedSurface>
+                    </AnimatedSurface> */}
 
                     <View ref={(c) => { this.scrollContainer = c; }} {...this.panResponder.panHandlers} style={{ width: this.state.width, height: this.state.height }}>
                         <FlatList
