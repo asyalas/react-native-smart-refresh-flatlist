@@ -117,6 +117,7 @@ export default class RefreshAndLoadMorePage extends React.Component {
           renderItem={(data) => this.renderItem(data)}
           initialPage={1}
           pageSize={10}
+          AsycConnectedChange={'connectionChange'}
           onFetch={this.onFetch.bind(this)}
           {...this.footerView()}
         />
