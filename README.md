@@ -47,12 +47,12 @@
 
 
 #### Step 2 - import and use in project
-#####on Android
+##### on Android
 ###### in AndroidManifest.xml
 ```javascript
    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
-
+##### Main
 ```javascript
     import SmartFlatList from 'react-native-smart-refresh-flatlist'
 ```
