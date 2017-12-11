@@ -82,10 +82,10 @@
 ```
 ### Reference
 
-https://github.com/gzfgeh/RefreshListDemo
-https://github.com/greatbsky/react-native-pull
+https://github.com/gzfgeh/RefreshListDemo </br>
+https://github.com/greatbsky/react-native-pull </br>
 https://github.com/FaridSafi/react-native-gifted-listview
 #### Finally
-如果对rn源码里的art有兴趣也可以打开源码的注释看看，不过ios需要配置
+如果对rn源码里的art有兴趣也可以打开源码的注释看看，不过ios需要配置</br>
 如果喜欢，请顺手我一个star，非常感谢~ ：）
 
