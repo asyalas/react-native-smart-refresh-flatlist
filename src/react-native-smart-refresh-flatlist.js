@@ -83,7 +83,6 @@ export default class SmartFlatList extends Component {
             onStartShouldSetResponderCapture: (e, gesture) => this.onStartShouldSetResponderCapture(e, gesture),
             onMoveShouldSetResponderCapture: (e, gesture) => this.onStartShouldSetResponderCapture(e, gesture),
         });
-        this.setFlag(defaultFlag);
         this.base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABQBAMAAAD8TNiNAAAAJ1BMVEUAAACqqqplZWVnZ2doaGhqampoaGhpaWlnZ2dmZmZlZWVmZmZnZ2duD78kAAAADHRSTlMAA6CYqZOlnI+Kg/B86E+1AAAAhklEQVQ4y+2LvQ3CQAxGLSHEBSg8AAX0jECTnhFosgcjZKr8StE3VHz5EkeRMkF0rzk/P58k9rgOW78j+TE99OoeKpEbCvcPVDJ0OvsJ9bQs6Jxs26h5HCrlr9w8vi8zHphfmI0fcvO/ZXJG8wDzcvDFO2Y/AJj9ADE7gXmlxFMIyVpJ7DECzC9J2EC2ECAAAAAASUVORK5CYII=';
 
     }
@@ -238,7 +237,7 @@ export default class SmartFlatList extends Component {
     setFlag(flag) {
         if (this.flag != flag) {
             this.flag = flag;
-            this.renderTopIndicator();
+            this.forceUpdate()
         }
     }
     isAndroid() {
@@ -396,8 +395,12 @@ export default class SmartFlatList extends Component {
 
         }
     }
+    componentWillMount(){
+        this.setFlag(defaultFlag);
+    }
     componentDidMount() {
 
+        
         this._postFetch()
     }
 
@@ -538,48 +541,29 @@ export default class SmartFlatList extends Component {
                 outputRange: ['0deg', '-180deg']
             })
         }];
-
         if (pulling) {
             Animated.timing(this.state.prArrowDeg, {
                 toValue: 0,
                 duration: 100,
                 easing: Easing.inOut(Easing.quad)
             }).start();
-            this.txtPulling && this.txtPulling.setNativeProps({ style: styles.show });
-            this.txtPullok && this.txtPullok.setNativeProps({ style: styles.hide });
-            this.txtPullrelease && this.txtPullrelease.setNativeProps({ style: styles.hide });
-            this.txtPullSuccess && this.txtPullSuccess.setNativeProps({ style: styles.hide });
         } else if (pullok) {
             Animated.timing(this.state.prArrowDeg, {
                 toValue: 1,
                 duration: 100,
                 easing: Easing.inOut(Easing.quad)
             }).start();
-            this.txtPulling && this.txtPulling.setNativeProps({ style: styles.hide });
-            this.txtPullok && this.txtPullok.setNativeProps({ style: styles.show });
-            this.txtPullrelease && this.txtPullrelease.setNativeProps({ style: styles.hide });
-            this.txtPullSuccess && this.txtPullSuccess.setNativeProps({ style: styles.hide });
-        } else if (pullrelease) {
-            this.txtPulling && this.txtPulling.setNativeProps({ style: styles.hide });
-            this.txtPullok && this.txtPullok.setNativeProps({ style: styles.hide });
-            this.txtPullrelease && this.txtPullrelease.setNativeProps({ style: styles.show });
-            this.txtPullSuccess && this.txtPullSuccess.setNativeProps({ style: styles.hide });
-        } else if (pullSuccess) {
-            this.txtPulling && this.txtPulling.setNativeProps({ style: styles.hide });
-            this.txtPullok && this.txtPullok.setNativeProps({ style: styles.hide });
-            this.txtPullrelease && this.txtPullrelease.setNativeProps({ style: styles.hide });
-            this.txtPullSuccess && this.txtPullSuccess.setNativeProps({ style: styles.show });
         }
         return (
             <View style={[styles.headWrap, { height: this.topIndicatorHeight, backgroundColor: this.topBackgroundColor }]}>
-                <View ref={(c) => { this.txtPulling = c; }} style={styles.hide}>
+                <View ref={(c) => { this.txtPulling = c; }} style={pulling?styles.show:styles.hide}>
                     <Animated.Image style={[styles.arrow, { transform: this.transform }]}
                         resizeMode={'contain'}
                         source={{ uri: this.base64Icon }} />
                     <Text style={styles.arrowText}>{"下拉可以刷新"}</Text>
                 </View>
 
-                <View ref={(c) => { this.txtPullok = c; }} style={styles.hide}>
+                <View ref={(c) => { this.txtPullok = c; }} style={pullok?styles.show:styles.hide}>
 
                     <Animated.Image style={[styles.arrow, { transform: this.transform }]}
                         resizeMode={'contain'}
@@ -587,11 +571,11 @@ export default class SmartFlatList extends Component {
                     <Text style={styles.arrowText}>{"释放立即刷新"}</Text>
                 </View>
 
-                <View ref={(c) => { this.txtPullrelease = c; }} style={styles.hide}>
+                <View ref={(c) => { this.txtPullrelease = c; }} style={pullrelease?styles.show:styles.hide}>
                     <ActivityIndicator size="small" color="gray" style={styles.arrow} />
                     <Text style={styles.arrowText}>{"刷新数据中..."}</Text>
                 </View>
-                <View ref={(c) => { this.txtPullSuccess = c; }} style={styles.hide}>
+                <View ref={(c) => { this.txtPullSuccess = c; }} style={pullSuccess?styles.show:styles.hide}>
                     <Text style={styles.arrowText}>{"刷新成功.."}</Text>
                 </View>
 

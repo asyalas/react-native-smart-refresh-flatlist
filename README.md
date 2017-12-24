@@ -61,7 +61,14 @@
         super(props);
         this.state = {}
     }
+    fetch() {
 
+        return fetch(REQUEST_URL).then((response) => response.json())
+        .then((responseData) => {
+            responseData.sum = responseData.hourly.length
+            return responseData
+        });
+    }
     async onFetch(page, pageSize, callback) {
         // do something for fetch data
         await this.fetch().then((response) => {
