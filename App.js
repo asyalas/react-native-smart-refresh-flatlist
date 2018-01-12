@@ -33,7 +33,10 @@ export default class RefreshAndLoadMorePage extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      prArrowDeg: new Animated.Value(0),
+    }
+    this.base64Icon = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABQBAMAAAD8TNiNAAAAJ1BMVEUAAACqqqplZWVnZ2doaGhqampoaGhpaWlnZ2dmZmZlZWVmZmZnZ2duD78kAAAADHRSTlMAA6CYqZOlnI+Kg/B86E+1AAAAhklEQVQ4y+2LvQ3CQAxGLSHEBSg8AAX0jECTnhFosgcjZKr8StE3VHz5EkeRMkF0rzk/P58k9rgOW78j+TE99OoeKpEbCvcPVDJ0OvsJ9bQs6Jxs26h5HCrlr9w8vi8zHphfmI0fcvO/ZXJG8wDzcvDFO2Y/AJj9ADE7gXmlxFMIyVpJ7DECzC9J2EC2ECAAAAAASUVORK5CYII=';
   }
 
   async onFetch(page, pageSize, callback) {
@@ -104,6 +107,57 @@ export default class RefreshAndLoadMorePage extends React.Component {
       loading
     }
   }
+
+  defaultTopIndicatorRender = (pulling, pullok, pullrelease, pullSuccess, gesturePosition) => {
+    // console.log(pulling, pullok, pullrelease, pullSuccess, gesturePosition)
+    this.transform = [{
+      rotate: this.state.prArrowDeg.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['0deg', '-100deg']
+      })
+    }];
+    if (pulling) {
+      Animated.timing(this.state.prArrowDeg, {
+        toValue: 0,
+        duration: 100,
+        easing: Easing.inOut(Easing.quad)
+      }).start();
+    } else if (pullok) {
+      Animated.timing(this.state.prArrowDeg, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.inOut(Easing.quad)
+      }).start();
+    }
+    return (
+      <View style={[styles.headWrap]}>
+        <View ref={(c) => { this.txtPulling = c; }} style={pulling ? styles.show : styles.hide}>
+          <Animated.Image style={[styles.arrow, { transform: this.transform }]}
+            resizeMode={'contain'}
+            source={{ uri: this.base64Icon }} />
+          <Text style={styles.arrowText}>{"下拉可以刷新"}</Text>
+        </View>
+
+        <View ref={(c) => { this.txtPullok = c; }} style={pullok ? styles.show : styles.hide}>
+
+          <Animated.Image style={[styles.arrow, { transform: this.transform }]}
+            resizeMode={'contain'}
+            source={{ uri: this.base64Icon }} />
+          <Text style={styles.arrowText}>{"释放立即刷新"}</Text>
+        </View>
+
+        <View ref={(c) => { this.txtPullrelease = c; }} style={pullrelease ? styles.show : styles.hide}>
+          <ActivityIndicator size="small" color="gray" style={styles.arrow} />
+          <Text style={styles.arrowText}>{"刷新数据中..."}</Text>
+        </View>
+        <View ref={(c) => { this.txtPullSuccess = c; }} style={pullSuccess ? styles.show : styles.hide}>
+          <Text style={styles.arrowText}>{"刷新成功.."}</Text>
+        </View>
+
+      </View>
+    );
+
+  }
   render() {
 
     return (
@@ -119,7 +173,8 @@ export default class RefreshAndLoadMorePage extends React.Component {
           pageSize={10}
           AsycConnectedChange={'connectionChange'}
           onFetch={this.onFetch.bind(this)}
-          {...this.footerView()}
+          topIndicatorRender={this.defaultTopIndicatorRender}
+          {...this.footerView() }
         />
         <View style={{ backgroundColor: '#333', height: 100, width: Dimensions.get('window').width, justifyContent: 'center', alignItems: 'center' }}>
           <Text>其他内容区</Text>
@@ -161,12 +216,15 @@ var styles = StyleSheet.create({
   wrap: {
     flex: 1,
     position: 'relative',
-    zIndex: -1
+    zIndex: -999
   },
   headWrap: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#eea0a1'
+    backgroundColor: '#eca02a',
+    height: 100,
+
+
   },
   hide: {
     position: 'absolute',
@@ -189,13 +247,6 @@ var styles = StyleSheet.create({
   },
   arrowText: {
     marginLeft: 20,
-  },
-  views: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-    flexDirection: 'row'
   },
   footer: {
     backgroundColor: '#f2f2f2',
